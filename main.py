@@ -1,5 +1,4 @@
 from random import randint, randrange
-import random
 
 ################################
 #
@@ -47,7 +46,7 @@ class Drake(Enemy):
 class GiantSpider(Enemy):
     def __init__(self):
         super(GiantSpider, self).__init__(name="Giant Spider",
-                                          hp=3,
+                                          hp=1, # 3
                                           damage=1,
                                           gold=1,
                                           movement=5)
@@ -80,11 +79,11 @@ class Zombie(Enemy):
 # Boss Fight Enemies
 class ElderDragon(Enemy):
     def __init__(self):
-        super(Dragon, self).__init__(name="Elder Dragon",
-                                     hp=20,
-                                     damage=7,
-                                     gold=50,
-                                     movement=10)
+        super(ElderDragon, self).__init__(name="Elder Dragon",
+                                          hp=20,
+                                          damage=7,
+                                          gold=50,
+                                          movement=10)
 
 class Item():
     def __init__(self, name, description, value, price, sell):
@@ -222,31 +221,38 @@ def fight(enemyname, enemyhealth, enemydamage, enemygold):
         choice = choice.lower()
 
         if choice == "attack":
+            enemydamage = enemydamage * (wave * 1.50)
+            enemyhp = enemyhp * (wave * 1.50)
+            enemygold = enemygold * (wave * 2)
+
             print("\nYou attack for " + str(Player().damage) + " damage!")
             enemyhp = enemyhp - Player().damage
             print("The " + str(enemyname) + " has " + str(enemyhp) + " health remaining!")
-            print("\nThe " + str(enemyname) + " attacks for " + str(enemydamage) + " damage!")
-            currenthp = currenthp - enemydamage
-            print("You have " + str(currenthp) + " health remaining!\n")
-            if enemyhp == 0:
-                print("You killed it")
+
+            if enemyhp <= 0:
+                print("\nYou defeated the " + str(enemyname))
                 print("You looted " + str(enemygold) + " gold from " + str(enemyname))
                 currentgold = currentgold + enemygold
                 print("You have " + str(currentgold) + " gold!\n")
-            elif currenthp == 0:
+                break
+            elif currenthp <= 0:
                 death()
             else:
                 pass
 
+            print("\nThe " + str(enemyname) + " attacks for " + str(enemydamage) + " damage!")
+            currenthp = currenthp - enemydamage
+            print("You have " + str(currenthp) + " health remaining!\n")
+
+
         elif choice == "potion":
             print("\nYou have these potions in your bag:\n" + str(potionplayerlist))
-            chosenpotion = input("What potion do you want to use?")
+            chosenpotion = input("What potion do you want to use?\n-->")
 
             if chosenpotion == "health":
-                print("\nYou drink the health potion and restore " + str(
-                    HealthPotion().value) + " HP!")  # need to create a health potion
-                currenthp = currenthp + HealthPotion().value
-                print("You now have " + currenthp)
+                print("\nYou drink the health potion and restore " + str(HealthPotion.value) + " HP!")
+                currenthp = currenthp + HealthPotion.value
+                print("You now have " + str(currenthp))
             else:
                 print("\nYou frantically search through the potions that you have")
 
@@ -255,37 +261,45 @@ def fight(enemyname, enemyhealth, enemydamage, enemygold):
     wave = wave + 1
     return wave, currenthp, currentgold
 
-
-
-# also need to add the money being subtracted from the player
-# Still need to finish selling potions also
 def potionbuy(potionname, potionprice):
+    global currentgold
+
     print("\nAhh I see you are interested in the " + str(potionname))
     print("The cost is " + str(potionprice) + " gold")
+
     while True:
         confirm = input("YES or NO\n--> ")
-        if confirm == "yes":
+        if confirm == "yes" or confirm == "y":
             potionplayerlist.append(potionname)
+            currentgold = currentgold - (potionprice)
+
             print("\nYou add a " + str(potionname) + " to your bag")
             print("Current Potions: " + str(potionplayerlist))
+            print("\nYou have " + str(currentgold) + " gold.")
             break
-        elif confirm == "no":
+        elif confirm == "no" or confirm == "n":
             print("\nChanged your mind?")
             break
         else:
             print("\nWhat was that?")
 
 def potionselling(potionname, potionsell):
+    global currentgold
+
     print("\nSo you want to sell " + str(potionname))
     print("I'll buy it for " + str(potionsell) + " gold")
+
     while True:
         confirm = input("YES or NO\n--> ")
-        if confirm == "yes":
-            potionplayerlist.append(potionname)
-            print("\nYou add a " + str(potionname) + " to your bag")
+        if confirm == "yes" or confirm == "y":
+            potionplayerlist.remove(potionname)
+            currentgold = currentgold + (potionsell)
+
+            print("\nYou remove " + str(potionname) + " from your bag")
             print("Current Potions: " + str(potionplayerlist))
+            print("\nYou have " + str(currentgold) + " gold.")
             break
-        elif confirm == "no":
+        elif confirm == "no" or confirm == "n":
             print("\nChanged your mind?")
             break
         else:
@@ -322,7 +336,7 @@ def main():
             purchase = input("Are you BUYING or SELLING?\n--> ")
             purchase = purchase.lower()
 
-            if purchase == "buying":
+            if purchase == "buying" or purchase == "buy":
                 while True:
                     print("\nWhat would you like to buy?")
                     print("EXIT to leave the shop")
@@ -342,12 +356,12 @@ def main():
                     else:
                         print("is that all")
 
-            elif purchase == "selling":
+            elif purchase == "selling" or purchase == "sell":
                 while True:
                     print("\nWhat would you like to sell?")
                     print("EXIT to leave the shop")
 
-                    potionremove = input("\nI see you have" + str(potionplayerlist))
+                    potionremove = input("\nI see you have" + str(potionplayerlist) + "\n--> ")
                     potionremove = potionremove.lower()
 
                     if potionremove == "health":
@@ -403,4 +417,3 @@ def main():
 
 
 main()
-
