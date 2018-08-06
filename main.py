@@ -3,9 +3,11 @@ from random import randint, randrange
 ################################
 #
 # TO DO:
-# Finish the selling part of the shop
+#
 # Add the rest of the potions available to buy
 # Create the other creatures and add them into the enemy list
+#
+# Add blocking to fight commands? how much damage blocked equals damage * 2???
 #
 ################################
 
@@ -23,7 +25,7 @@ class Player(Character):
                                      hp=20,
                                      damage=1,
                                      # Starting gold is 10
-                                     gold=1000,
+                                     gold=10,
                                      movement=3)
 # Enemies
 class Enemy(Character):
@@ -221,16 +223,18 @@ def fight(enemyname, enemyhealth, enemydamage, enemygold):
         choice = choice.lower()
 
         if choice == "attack":
-            enemydamage = enemydamage * (wave * 1.50)
-            enemyhp = enemyhp * (wave * 1.50)
-            enemygold = enemygold * (wave * 2)
+            enemydamage = enemydamage * (wave * .50)
+            enemyhp = enemyhp * (wave * .50)
+            enemygold = enemygold * (wave * 1.25)
+            enemygold = round(enemygold, 0)
 
             print("\nYou attack for " + str(Player().damage) + " damage!")
             enemyhp = enemyhp - Player().damage
             print("The " + str(enemyname) + " has " + str(enemyhp) + " health remaining!")
 
             if enemyhp <= 0:
-                print("\nYou defeated the " + str(enemyname))
+                print("\n* * * * * * Round Won * * * * * *")
+                print("You defeated the " + str(enemyname))
                 print("You looted " + str(enemygold) + " gold from " + str(enemyname))
                 currentgold = currentgold + enemygold
                 print("You have " + str(currentgold) + " gold!\n")
@@ -249,12 +253,16 @@ def fight(enemyname, enemyhealth, enemydamage, enemygold):
             print("\nYou have these potions in your bag:\n" + str(potionplayerlist))
             chosenpotion = input("What potion do you want to use?\n-->")
 
-            if chosenpotion == "health":
-                print("\nYou drink the health potion and restore " + str(HealthPotion.value) + " HP!")
-                currenthp = currenthp + HealthPotion.value
-                print("You now have " + str(currenthp))
-            else:
-                print("\nYou frantically search through the potions that you have")
+            for potion in potionplayerlist:
+                if chosenpotion == "health":
+                    print("\nYou drink the health potion and restore " + str(HealthPotion.value) + " HP!")
+                    currenthp = currenthp + HealthPotion.value
+                    potionplayerlist.remove(potion)
+                    print("You now have " + str(currenthp))
+                    print("Potions left:\n" + str(potionplayerlist))
+                # add more potions
+                else:
+                    print("\nYou frantically search through the potions that you have")
 
         else:
             print("\nThe spider is getting ready to strike what are you gonna do?\n")
@@ -307,6 +315,14 @@ def potionselling(potionname, potionsell):
 
 def main():
 
+#    print ("You wake up confused and sore.\n"
+#           "you look around to see that you are in an arena.\n"
+#           '"Welcome ladies and gentlemen!"\n'
+#           "You look up to see a man in a lavish outfit addressing the crowd.\n"
+#           '"Tonight we have an exciting event.\n'
+#           'We are going to let this convict fight for his freedom in the arena.\n'
+#           'Of course he will be allowed to buy stuff from the shop '
+#           'between fights with our exotic selection of beasts"')
 #    name = input('"So what is your name?"\n'
 #                 '-->')
 #    name = name.title()
