@@ -9,6 +9,9 @@ from random import randint, randrange
 #
 # Add blocking to fight commands? how much damage blocked equals damage * 2???
 #
+#
+# Add current hp for enemy similar to current hp for the player?
+#
 ################################
 
 class Character():
@@ -22,7 +25,7 @@ class Character():
 class Player(Character):
     def __init__(self):
         super(Player, self).__init__(name="",
-                                     hp=20,
+                                     hp=50,
                                      damage=1,
                                      # Starting gold is 10
                                      gold=10,
@@ -191,6 +194,8 @@ GoldenGnome = GoldenGnome()
 Slime = Slime()
 Zombie = Zombie()
 
+currentgiantspiderhp = GiantSpider().hp
+
 # Boss Enemies
 ElderDragon = ElderDragon()
 
@@ -215,21 +220,32 @@ def fight(enemyname, enemyhealth, enemydamage, enemygold):
     global wave
     global currenthp
     global currentgold
+    global enemylevel
+    # will this even work? having current enemy hp as a var
+    # maybe it will subtract it like the player hp
+    # I think the enemy current hp needs to be referenced outside the function
+    global currentgiantspiderhp
+
 
     print("What do you want to do?")
+
+
 
     while enemyhp and currenthp > 0:
         choice = input("\nATTACK or use a POTION?\n--> ")
         choice = choice.lower()
 
+        enemydamage = enemydamage * (wave * 0.75)
+        currentenemyhp = enemyhp * wave
+        enemygold = enemygold
+        enemygold = round(enemygold, 0)
+
         if choice == "attack":
-            enemydamage = enemydamage * (wave * .50)
-            enemyhp = enemyhp * (wave * .50)
-            enemygold = enemygold * (wave * 1.25)
-            enemygold = round(enemygold, 0)
+
+            print("Starting enemy hp: " + str(enemyhp))
 
             print("\nYou attack for " + str(Player().damage) + " damage!")
-            enemyhp = enemyhp - Player().damage
+            currentenemyhp = currentenemyhp - Player().damage
             print("The " + str(enemyname) + " has " + str(enemyhp) + " health remaining!")
 
             if enemyhp <= 0:
@@ -239,14 +255,17 @@ def fight(enemyname, enemyhealth, enemydamage, enemygold):
                 currentgold = currentgold + enemygold
                 print("You have " + str(currentgold) + " gold!\n")
                 break
-            elif currenthp <= 0:
-                death()
             else:
                 pass
 
             print("\nThe " + str(enemyname) + " attacks for " + str(enemydamage) + " damage!")
             currenthp = currenthp - enemydamage
-            print("You have " + str(currenthp) + " health remaining!\n")
+
+            if currenthp <= 0:
+                death()
+                break
+            else:
+                print("You have " + str(currenthp) + " health remaining!\n")
 
 
         elif choice == "potion":
@@ -264,10 +283,19 @@ def fight(enemyname, enemyhealth, enemydamage, enemygold):
                 else:
                     print("\nYou frantically search through the potions that you have")
 
+            print("\nThe " + str(enemyname) + " attacks for " + str(enemydamage) + " damage!")
+            currenthp = currenthp - enemydamage
+            print("You have " + str(currenthp) + " health remaining!\n")
+
+            if currenthp <= 0:
+                death()
+            else:
+                pass
+
         else:
-            print("\nThe spider is getting ready to strike what are you gonna do?\n")
+            print("\nThe " + str(enemyname) + " is getting ready to strike what are you gonna do?\n")
     wave = wave + 1
-    return wave, currenthp, currentgold
+    return wave, currenthp, currentgold,
 
 def potionbuy(potionname, potionprice):
     global currentgold
@@ -315,20 +343,6 @@ def potionselling(potionname, potionsell):
 
 def main():
 
-#    print ("You wake up confused and sore.\n"
-#           "you look around to see that you are in an arena.\n"
-#           '"Welcome ladies and gentlemen!"\n'
-#           "You look up to see a man in a lavish outfit addressing the crowd.\n"
-#           '"Tonight we have an exciting event.\n'
-#           'We are going to let this convict fight for his freedom in the arena.\n'
-#           'Of course he will be allowed to buy stuff from the shop '
-#           'between fights with our exotic selection of beasts"')
-#    name = input('"So what is your name?"\n'
-#                 '-->')
-#    name = name.title()
-#
-#    print ("Well good luck, " + name)
-
     global wave
     global currenthp
     global currentgold
@@ -338,7 +352,7 @@ def main():
     maxhp = Player().hp
 
 
-    while Player().hp > 0:
+    while currenthp > 0:
         shop = input("\nDo you want to continue the FIGHT, visit the SHOP, or drink a POTION?\n--> ")
         shop = shop.lower()
 
