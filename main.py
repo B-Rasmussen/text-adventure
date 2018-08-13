@@ -194,13 +194,15 @@ GoldenGnome = GoldenGnome()
 Slime = Slime()
 Zombie = Zombie()
 
-currentgiantspiderhp = GiantSpider().hp
-
 # Boss Enemies
 ElderDragon = ElderDragon()
 
 
+enemyhp = 1
+#enemyhp = enemyhp * wave
+
 def death():
+    print()
     print("==================")
     print("| You have died! |")
     print("==================")
@@ -215,40 +217,41 @@ def fight(enemyname, enemyhealth, enemydamage, enemygold):
     # making the enemies stronger and harder for the player
 
 
-    enemyhp = enemyhealth
 
     global wave
     global currenthp
     global currentgold
-    global enemylevel
+    global enemyhp
+
     # will this even work? having current enemy hp as a var
     # maybe it will subtract it like the player hp
     # I think the enemy current hp needs to be referenced outside the function
-    global currentgiantspiderhp
+
 
 
     print("What do you want to do?")
 
+
+    enemyhp = enemyhealth
+    enemydamage = enemydamage * (wave * 0.75)
+    currentenemyhp = enemyhp * wave
+    enemygold = enemygold
+    enemygold = round(enemygold, 0)
 
 
     while enemyhp and currenthp > 0:
         choice = input("\nATTACK or use a POTION?\n--> ")
         choice = choice.lower()
 
-        enemydamage = enemydamage * (wave * 0.75)
-        currentenemyhp = enemyhp * wave
-        enemygold = enemygold
-        enemygold = round(enemygold, 0)
-
         if choice == "attack":
-
-            print("Starting enemy hp: " + str(enemyhp))
+            print("\nOriginal enemy hp: " + str(enemyhp))
+            print("This round enemy hp: " + str(currentenemyhp))
 
             print("\nYou attack for " + str(Player().damage) + " damage!")
             currentenemyhp = currentenemyhp - Player().damage
-            print("The " + str(enemyname) + " has " + str(enemyhp) + " health remaining!")
+            print("The " + str(enemyname) + " has " + str(currentenemyhp) + " health remaining!")
 
-            if enemyhp <= 0:
+            if currentenemyhp <= 0:
                 print("\n* * * * * * Round Won * * * * * *")
                 print("You defeated the " + str(enemyname))
                 print("You looted " + str(enemygold) + " gold from " + str(enemyname))
@@ -266,7 +269,6 @@ def fight(enemyname, enemyhealth, enemydamage, enemygold):
                 break
             else:
                 print("You have " + str(currenthp) + " health remaining!\n")
-
 
         elif choice == "potion":
             print("\nYou have these potions in your bag:\n" + str(potionplayerlist))
@@ -295,7 +297,7 @@ def fight(enemyname, enemyhealth, enemydamage, enemygold):
         else:
             print("\nThe " + str(enemyname) + " is getting ready to strike what are you gonna do?\n")
     wave = wave + 1
-    return wave, currenthp, currentgold,
+    return wave, currenthp, currentgold
 
 def potionbuy(potionname, potionprice):
     global currentgold
