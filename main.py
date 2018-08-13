@@ -26,8 +26,7 @@ class Player(Character):
     def __init__(self):
         super(Player, self).__init__(name="",
                                      hp=50,
-                                     damage=1,
-                                     # Starting gold is 10
+                                     damage=3,
                                      gold=10,
                                      movement=3)
 # Enemies
@@ -51,7 +50,7 @@ class Drake(Enemy):
 class GiantSpider(Enemy):
     def __init__(self):
         super(GiantSpider, self).__init__(name="Giant Spider",
-                                          hp=1, # 3
+                                          hp=3,
                                           damage=1,
                                           gold=1,
                                           movement=5)
@@ -76,7 +75,7 @@ class Slime(Enemy):
 class Zombie(Enemy):
     def __init__(self):
         super(Zombie, self).__init__(name="Zombie",
-                                     hp=2,
+                                     hp=5,
                                      damage=5,
                                      gold=5,
                                      movement=1)
@@ -109,7 +108,7 @@ class Item():
 # Potions
 class HPincrease(Item):
     def __init__(self):
-        super(HPincrease, self).__init__(name="Health Increase Potion",
+        super(HPincrease, self).__init__(name="HP up Potion",
                                          description="A potion that will increase your max hp by 5 points"
                                                      "and restore all of your hp",
                                          value=5,
@@ -121,15 +120,15 @@ class HealthPotion(Item):
         super(HealthPotion, self).__init__(name="Health Potion",
                                            description="A Potion that will restore 4 health",
                                            value=4,
-                                           price=7,
+                                           price=3,
                                            sell=2)
 
 class StrengthPotion(Item):
     def __init__(self):
         super(StrengthPotion, self).__init__(name="Strength Potion",
                                              description="A Potion that increases your damage by 2",
-                                             value=2,
-                                             price=8,
+                                             value=3,
+                                             price=10,
                                              sell=3)
 
 class PoisonPotion(Item):
@@ -165,7 +164,9 @@ player = Player()
 playerhp = Player().hp
 potionplayerlist = []
 currenthp = playerhp
+maxhp = playerhp
 currentgold = Player().gold
+currentattack = Player().damage
 
 # Current Round
 wave = 1
@@ -183,7 +184,7 @@ Dagger = Dagger()
 
 
 # Shop
-potionlist = [HealthPotion.name, HPincrease.name, StrengthPotion.name, PoisonPotion.name]
+potionlist = [HealthPotion.name, HPincrease.name, PoisonPotion.name, StrengthPotion.name]
 potionlist = sorted(potionlist, key=str.lower)
 
 
@@ -199,6 +200,7 @@ ElderDragon = ElderDragon()
 
 
 enemyhp = 1
+poison = 0
 #enemyhp = enemyhp * wave
 
 def death():
@@ -207,6 +209,8 @@ def death():
     print("| You have died! |")
     print("==================")
     return
+
+
 
 def fight(enemyname, enemyhealth, enemydamage, enemygold):
     # Enemy health goes before the while loop nested in the if loop
@@ -220,21 +224,20 @@ def fight(enemyname, enemyhealth, enemydamage, enemygold):
 
     global wave
     global currenthp
+    global maxhp
     global currentgold
+    global currentattack
     global enemyhp
-
-    # will this even work? having current enemy hp as a var
-    # maybe it will subtract it like the player hp
-    # I think the enemy current hp needs to be referenced outside the function
+    global poison
 
 
 
     print("What do you want to do?")
-
-
+    enemydamage = enemydamage * (wave * 0.5)
+    enemydamage = round(enemydamage)
     enemyhp = enemyhealth
-    enemydamage = enemydamage * (wave * 0.75)
-    currentenemyhp = enemyhp * wave
+    currentenemyhp = enemyhp * (wave * 0.5)
+    currentenemyhp = round(currentenemyhp)
     enemygold = enemygold
     enemygold = round(enemygold, 0)
 
@@ -244,12 +247,30 @@ def fight(enemyname, enemyhealth, enemydamage, enemygold):
         choice = choice.lower()
 
         if choice == "attack":
-            print("\nOriginal enemy hp: " + str(enemyhp))
-            print("This round enemy hp: " + str(currentenemyhp))
 
-            print("\nYou attack for " + str(Player().damage) + " damage!")
-            currentenemyhp = currentenemyhp - Player().damage
+
+            print("\nYou attack for " + str(currentattack) + " damage!")
+            currentenemyhp = currentenemyhp - currentattack
             print("The " + str(enemyname) + " has " + str(currentenemyhp) + " health remaining!")
+
+            if poison > 0:
+                print("\nThe poison hurts the " + str(enemyname) + " for " + str(poison) + " damage")
+                poison = poison - 1
+                currentenemyhp = currentenemyhp - poison
+                print("The " + str(enemyname) + " has " + str(currentenemyhp) + " health remaining!")
+                print("The poison is going to wear off in " + str(poison) + " turns")
+                if currentenemyhp <= 0:
+                    poison = 0
+                    print("\n* * * * * * Round Won * * * * * *")
+                    print("You defeated the " + str(enemyname))
+                    print("You looted " + str(enemygold) + " gold from " + str(enemyname))
+                    currentgold = currentgold + enemygold
+                    print("You have " + str(currentgold) + " gold!\n")
+                    break
+                else:
+                    pass
+            else:
+                pass
 
             if currentenemyhp <= 0:
                 print("\n* * * * * * Round Won * * * * * *")
@@ -264,24 +285,58 @@ def fight(enemyname, enemyhealth, enemydamage, enemygold):
             print("\nThe " + str(enemyname) + " attacks for " + str(enemydamage) + " damage!")
             currenthp = currenthp - enemydamage
 
+            if currentenemyhp <= 0:
+                print("\n* * * * * * Round Won * * * * * *")
+                print("You defeated the " + str(enemyname))
+                print("You looted " + str(enemygold) + " gold from " + str(enemyname))
+                currentgold = currentgold + enemygold
+                print("You have " + str(currentgold) + " gold!\n")
+                break
+            else:
+                pass
+
             if currenthp <= 0:
                 death()
-                break
             else:
                 print("You have " + str(currenthp) + " health remaining!\n")
 
         elif choice == "potion":
             print("\nYou have these potions in your bag:\n" + str(potionplayerlist))
-            chosenpotion = input("What potion do you want to use?\n-->")
+            chosenpotion = input("Which potion do you want to use?\n-->")
+            chosenpotion = chosenpotion.lower()
 
             for potion in potionplayerlist:
                 if chosenpotion == "health":
-                    print("\nYou drink the health potion and restore " + str(HealthPotion.value) + " HP!")
+
+                    print("\nYou drink the Health potion and restore " + str(HealthPotion.value) + " HP!")
                     currenthp = currenthp + HealthPotion.value
                     potionplayerlist.remove(potion)
                     print("You now have " + str(currenthp))
                     print("Potions left:\n" + str(potionplayerlist))
-                # add more potions
+
+                elif chosenpotion == "hp up":
+
+                    print("\nYou drink the HP up potion and increase your hp by " + str(HPincrease.value) + " points!")
+                    maxhp = maxhp + HPincrease.value
+                    currenthp = maxhp
+                    potionplayerlist.remove(potion)
+                    print("You now have " + str(maxhp))
+                    print("Potions left:\n" + str(potionplayerlist))
+
+                elif chosenpotion == "strength":
+
+                    print("\nYou drink the Strength potion and your damage has increased by " + str(StrengthPotion.value))
+                    currentattack = currentattack + StrengthPotion.value
+                    potionplayerlist.remove(potion)
+                    print("You now have " + str(currentattack) + " damage")
+                    print("Potions left:\n" + str(potionplayerlist))
+
+                elif chosenpotion == "poison":
+                    poison = poison + PoisonPotion.value
+                    print("\nYou throw the glowing green veil at the " + str(enemyname) + " inflicting it with " + str(poison) + " poison damage")
+                    potionplayerlist.remove(potion)
+                    print("Potions left:\n" + str(potionplayerlist))
+
                 else:
                     print("\nYou frantically search through the potions that you have")
 
@@ -348,10 +403,14 @@ def main():
     global wave
     global currenthp
     global currentgold
+    global maxhp
+    global currentattack
 
     # Player Stats
     # Keep player hp out of while loop to remain consistent throughout the waves
-    maxhp = Player().hp
+
+    print("Welcome to the Grand Arena")
+    print("")
 
 
     while currenthp > 0:
@@ -359,7 +418,7 @@ def main():
         shop = shop.lower()
 
         # works but need to change the odds of getting gnome
-        Opponent = [GiantSpider, GoldenGnome, Zombie]
+        Opponent = [GiantSpider, GoldenGnome, Zombie, Drake, Slime]
         RandomEnemy = randrange(0, len(Opponent))
 
         if shop == "shop":
@@ -373,14 +432,30 @@ def main():
                     print("\nWhat would you like to buy?")
                     print("EXIT to leave the shop")
 
-                    potionadd = input("\nWe have a these potions: \n"+ str(potionlist) + "\n--> ")
+                    potionadd = input("If you want a DESCRIPTION of each potion let me know otherwise,\n\nWe have these potions: \n"+ str(potionlist) + "\n--> ")
                     potionadd = potionadd.lower()
 
                     if potionadd == "health":
                         potionbuy(HealthPotion.name, HealthPotion.price)
 
-                    elif potionadd == "hpincrease":
+                    elif potionadd == "hp up":
                         potionbuy(HPincrease.name, HPincrease.price)
+
+                    elif potionadd == "strength":
+                        potionbuy(StrengthPotion.name, StrengthPotion.price)
+
+                    elif potionadd == "poison":
+                        potionbuy(PoisonPotion.name, PoisonPotion.price)
+
+                    elif potionadd == "description" or potionadd == "desc":
+                        # health potion
+                        print("\nThe Health potion will restore 4 health")
+                        # hp increase potion
+                        print("\nThe HP Increase potion will restore you to full health as well as increase your max hp by " + str(HPincrease.value))
+                        # strength potion
+                        print("\nThe Strength potion increase your max damage by " + str(StrengthPotion.value))
+                        # poison potion
+                        print("\nThe Poison potion will deal " + str(PoisonPotion.value) + " damage and decrease by 1 each turn in combat")
 
                     elif potionadd == "exit":
                         break
@@ -399,8 +474,14 @@ def main():
                     if potionremove == "health":
                         potionselling(HealthPotion.name, HealthPotion.sell)
 
-                    elif potionremove == "hpincrease":
+                    elif potionremove == "hp up":
                         potionselling(HPincrease.name, HPincrease.sell)
+
+                    elif potionremove == "strength":
+                        potionselling(StrengthPotion.name, StrengthPotion.sell)
+
+                    elif potionremove == "poison":
+                        potionselling(PoisonPotion.name, PoisonPotion.sell)
 
                     elif potionremove == "exit":
                         break
@@ -409,15 +490,14 @@ def main():
                         print("Is that all?")
 
             else:
-                print("\nSorry I didn't quite catch that.")
+                print("\nQuit wasting my time and get out")
 
         elif shop == "fight":
             wave = wave
 
             if wave % 10 == 0:
                 print('\nRound: ' + str(wave))
-                print("\nPrepare for a Boss Fight")
-
+#                print("\nPrepare for a Boss Fight")
             else:
                 print('\nRound: ' + str(wave))
 
@@ -436,15 +516,60 @@ def main():
                 print("\nA Zombie climbs out from the ground and begins to shuffle towards you.")
                 fight(Zombie.name, Zombie.hp, Zombie.damage, Zombie.gold)
 
+            elif RandomEnemy == 3:
+                wave = wave
+                print("\nA drake swoops down from above!")
+                fight(Drake.name, Drake.hp, Drake.damage, Drake.gold)
+
+            elif RandomEnemy == 4:
+                wave = wave
+                print("\nA dark green slime inches out from the grates")
+                fight(Slime.name, Slime.hp, Slime.damage, Slime.gold)
+
             else:
                 pass
 
         elif shop == "potion":
-            print("You have these potions:")
-            print(potionplayerlist)
+            print("\nYou have these potions in your bag:\n" + str(potionplayerlist))
+            potionselect = input("Which potion do you want to use?\n-->")
+            potionselect = potionselect.lower()
+
+            for potion in potionplayerlist:
+                if potionselect == "health":
+
+                    print("\nYou drink the Health potion and restore " + str(HealthPotion.value) + " HP!")
+                    currenthp = currenthp + HealthPotion.value
+                    potionplayerlist.remove(potion)
+                    print("You now have " + str(currenthp))
+                    print("Potions left:\n" + str(potionplayerlist))
+
+                elif potionselect == "hp up":
+
+                    print("\nYou drink the HP up potion and increase your hp by " + str(HPincrease.value) + " points!")
+                    maxhp = maxhp + HPincrease.value
+                    currenthp = maxhp
+                    potionplayerlist.remove(potion)
+                    print("You now have " + str(maxhp))
+                    print("Potions left:\n" + str(potionplayerlist))
+
+                elif potionselect == "strength":
+
+                    print("\nYou drink the Strength potion and your damage has increased by " + str(StrengthPotion.value))
+                    currentattack = currentattack + StrengthPotion.value
+                    potionplayerlist.remove(potion)
+                    print("You now have " + str(currentattack) + " damage")
+                    print("Potions left:\n" + str(potionplayerlist))
+
+                elif potionselect == "poison":
+                    print("\nYou shake the veil and watch as the glowing green liquid swirls inside")
+
+                else:
+                    print("\nTime to continue the fight?")
+
+
 
         else:
-            print("\nCan you choose something groans the announcer")
+            print("\nYou look around trying to decide your next course of action")
             print("\nChoose to FIGHT, visit the SHOP, or drink a POTION")
 
 
