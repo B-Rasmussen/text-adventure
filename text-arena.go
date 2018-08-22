@@ -4,21 +4,21 @@ import ("fmt")
 
 type Player struct{
 	name 	string
-	hp 		float64
+	hp 	float64
 	damage 	float64
 	gold 	float64
 }
 
 type Enemy struct{
 	name 	string
-	hp 		float64
+	hp 	float64
 	damage 	float64
 	gold 	float64
 }
 
 type Item struct{
 	name 		string
-	description string
+	description 	string
 	value 		float64
 	price		float64
 	sell 		float64
@@ -28,14 +28,14 @@ type Item struct{
 // Potion List
 var (
 	HPincrease = 	Item{name: "HP up Potion", description: "A potion that will increase your max hp 
-						by 5 points and restore all of your hp",
-						value: 5, price: 10, sell: 3}
+				by 5 points and restore all of your hp",
+				value: 5, price: 10, sell: 3}
 	HealthPotion = 	Item{name: "Health Potion", description: "A Potion that will restore 4 health",
-						value: 4, price: 3, sell: 2}
+				value: 4, price: 3, sell: 2}
 	StrengthPotion	= Item{name: "Strength Potion", description: "A Potion that increases your damage by 2",
-						value: 3, price: 10, sell: 3}
+				value: 3, price: 10, sell: 3}
 	PoisonPotion = 	Item{name: "Poison Potion", description: "A Potion that deals diminishing damage over time",
-						value: 3, price: 8, sell: 2}
+				value: 3, price: 8, sell: 2}
 )
 
 
