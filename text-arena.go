@@ -3,39 +3,41 @@ package main
 import ("fmt")
 
 type Player struct{
-	name 	string
-	hp 	float64
+	hp 		float64
 	damage 	float64
 	gold 	float64
 }
 
 type Enemy struct{
 	name 	string
-	hp 	float64
+	hp 		float64
 	damage 	float64
 	gold 	float64
 }
 
 type Item struct{
 	name 		string
-	description 	string
+	description string
 	value 		float64
 	price		float64
 	sell 		float64
 }
 
+// Player Stats
+var (
+	user = Player{hp:50, damage: 3, gold: 10}
+)
 
 // Potion List
 var (
-	HPincrease = 	Item{name: "HP up Potion", description: "A potion that will increase your max hp 
-				by 5 points and restore all of your hp",
-				value: 5, price: 10, sell: 3}
-	HealthPotion = 	Item{name: "Health Potion", description: "A Potion that will restore 4 health",
-				value: 4, price: 3, sell: 2}
-	StrengthPotion	= Item{name: "Strength Potion", description: "A Potion that increases your damage by 2",
-				value: 3, price: 10, sell: 3}
-	PoisonPotion = 	Item{name: "Poison Potion", description: "A Potion that deals diminishing damage over time",
-				value: 3, price: 8, sell: 2}
+	HPincrease = Item{name: "HP up Potion", description: "A potion that will increase your max hp by 5 points and restore all of your hp",
+						value: 5, price: 10, sell: 3}
+	HealthPotion = Item{name: "Health Potion", description: "A Potion that will restore 4 health",
+						value: 4, price: 3, sell: 2}
+	StrengthPotion = Item{name: "Strength Potion", description: "A Potion that increases your damage by 2",
+						value: 3, price: 10, sell: 3}
+	PoisonPotion = Item{name: "Poison Potion", description: "A Potion that deals diminishing damage over time",
+						value: 3, price: 8, sell: 2}
 )
 
 
@@ -56,22 +58,25 @@ func death(){
 }
 
 func potionbuy(){
-	
+	fmt.Println("\nAhh I see you are interested in the ")
+	fmt.Println("The cost is " + " gold")
 }
 
-func seperate(){
-	fmt.Println("------------------")
+func potionsell(){
+
+}
+
+func fight(){
+	fmt.Println("What do you want to do?")
+
 }
 
 func main(){
 	fmt.Println("Welcome to the Grand Arena")
-	fmt.Println(Drake.name, Drake.hp, Drake.damage, Drake.gold)
-	seperate()
-	fmt.Println(GiantSpider)
-	seperate()
-	fmt.Println(GoldenGnome)
-	seperate()
-	fmt.Println(Slime)
-	seperate()
-	fmt.Println(Zombie)
+
+	for user.hp >= 0 {
+		// need to fill this area with main function from python include the shop, fight, and potion
+		// use fmt.scanln for input need variable to store the input
+		
+	}	
 }
