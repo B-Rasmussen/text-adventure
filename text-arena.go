@@ -1,6 +1,9 @@
 package main
 
 import ("fmt")
+		//"bufio"
+		//"strings"
+		//"os")
 
 type Player struct{
 	hp 		float64
@@ -71,12 +74,55 @@ func fight(){
 
 }
 
+/*
+func runScan() {
+
+	// you must declare your var, and pass the pointer into Scan() below
+	var input string
+
+	fmt.Print("\nEnter some text and press enter: ")
+
+	// using fmt.Scan, we can read single words in ascii string
+	num, err := fmt.Scan(&input)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println(input)
+	fmt.Println(num)
+}
+*/
+
 func main(){
 	fmt.Println("Welcome to the Grand Arena")
+
+	//runScan()
 
 	for user.hp >= 0 {
 		// need to fill this area with main function from python include the shop, fight, and potion
 		// use fmt.scanln for input need variable to store the input
+
+		var input string
+		str1 := "What do you want to do?\n-->"
+		fmt.Println(str1)
+		fmt.Scanf("%s", &input)
+		fmt.Println("you selected: ", input)
+		
+		// Runs through switch command twice need to fix
+		
+		switch {
+		case input == "shop":
+			fmt.Println("\nshop reached")
+		case input == "fight":
+			fmt.Println("\nPrepare for combat")
+		case input == "potion":
+			fmt.Println("\nyou look at your potions")
+		default:
+			fmt.Println("Please choose FIGHT, SHOP, or POTION")
+			
+		}
 		
 	}	
+
 }
